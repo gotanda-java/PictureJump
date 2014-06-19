@@ -13,7 +13,13 @@
 			</intent-filter>
 		</activity>
 
-		<activity android:name="PictureSendActivity" android:screenOrientation="portrait"/>
+		<activity android:name="PictureSendActivity" android:screenOrientation="portrait">
+		    <intent-filter >
+		        <action android:name="android.intent.action.SEND" />
+		        <category android:name="android.intent.category.DEFAULT" />
+		        <data android:mimeType="image/*" />
+		    </intent-filter>
+		</activity>
 		<activity android:name="CameraActivity" android:screenOrientation="landscape"/>
 		<activity android:name="DeviceSelectActivity" android:screenOrientation="portrait"/>
 		<activity android:name="PictureReceiveActivity" android:screenOrientation="portrait"/>

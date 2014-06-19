@@ -65,6 +65,13 @@ public class PictureSendActivity extends Activity {
 		// レイアウト設定ファイル指定
 		setContentView(R.layout.picture_send);
 
+		// 外部アプリケーションから画像を取得
+		if (Intent.ACTION_SEND.equals(getIntent().getAction())) {
+			Uri uri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+			picture = getImage(uri);
+			setPicture(picture);
+		}
+
 		// 「送信先選択」ボタンにリスナー設定
 		ImageButton ibtnSelectDevice = (ImageButton) findViewById(R.id.ibtn_select_device);
 		ibtnSelectDevice.setOnClickListener(new OnClickListener() {
@@ -151,6 +158,17 @@ public class PictureSendActivity extends Activity {
 
 		// ボタンの使用可能状態を更新
 		updateButtonStatus();
+	}
+
+	// Uriから画像へ変換
+	private Bitmap getImage(Uri uri) {
+		try {
+			InputStream in = getContentResolver().openInputStream(uri);
+			return BitmapFactory.decodeStream(in);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	// onDestroyメソッド(画面破棄イベント)
@@ -245,7 +263,8 @@ public class PictureSendActivity extends Activity {
 		intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(imgPath)));
 		startActivity(intent);
 	}
-	
+
+	// 画像を保存してパス作成
 	private String savePictureInSDcard() {
 		// SDカードのルートディレクトリ取得
 		String dir = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -255,21 +274,21 @@ public class PictureSendActivity extends Activity {
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmss");
 		String imgPath = baseDir + File.separator + format.format(cal.getTime()) + ".png";
-		//画像をバイト型に変換
-		try{
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		picture.compress(CompressFormat.PNG, 100, os);
-		os.flush();
-		byte[] w = os.toByteArray();
-		os.close();
-		// 画像を一時的にSDカードに保存
-		FileOutputStream out = new FileOutputStream(imgPath);
-		out.write(w,0,w.length);
-		out.flush();
-		}catch(Exception e){
+		// 画像をバイト型に変換
+		try {
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			picture.compress(CompressFormat.PNG, 100, os);
+			os.flush();
+			byte[] w = os.toByteArray();
+			os.close();
+			// 画像を一時的にSDカードに保存
+			FileOutputStream out = new FileOutputStream(imgPath);
+			out.write(w, 0, w.length);
+			out.flush();
+		} catch (Exception e) {
 			Log.e("error", "image error");
 		}
-		
+
 		return imgPath;
 	}
 
